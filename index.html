@@ -160,7 +160,7 @@ animation:sway var(--sw) ease-in-out var(--w) infinite alternate,blob var(--bl) 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
 /* ===== 설정: 수퍼베이스 값을 넣으세요 (Project Settings > API) ===== */
-const CFG = { SUPABASE_URL: "", SUPABASE_ANON_KEY: "", TABLE: "oc_profile" };
+const CFG = { SUPABASE_URL: "", SUPABASE_ANON_KEY: "", TABLE: "oc_profile", BUCKET: "oc-images" };
 
 const DEFAULT = {
   name: "테티스", nameEn: "Thetis", nameSub: "ΘΕΤΙΣ", inscription: "ΝΗΡΕΩΣ ΘΥΓΑΤΗΡ", detail: "",
@@ -265,27 +265,43 @@ function wrapStyle(prop, val) {
   r.insertNode(sp);
   const nr = document.createRange(); nr.selectNodeContents(sp); sl.removeAllRanges(); sl.addRange(nr); rteRange = nr.cloneRange();
 }
-function fileToDataUrl(f) {
+/* ---- 사진 올리기 (수퍼베이스 저장소) · 안 쓰는 사진은 자동 삭제 ---- */
+let UPLOADED = [];
+const storagePaths = str => {
+  const out = new Set(), re = new RegExp("/storage/v1/object/public/" + CFG.BUCKET + "/([^\"'\\\\\\s)?<>]+)", "g");
+  let m; while ((m = re.exec(str))) out.add(decodeURIComponent(m[1]));
+  return out;
+};
+async function removeFiles(paths) {
+  if (!sb || !paths.length) return;
+  try { await sb.storage.from(CFG.BUCKET).remove(paths); } catch (e) { /* 다음 저장 때 다시 정리돼요 */ }
+}
+function fileToBlob(f) {
   return new Promise((res, rej) => {
     if (!/^image\//.test(f.type)) return rej(new Error("이미지 파일만 넣을 수 있어요."));
-    const fr = new FileReader();
-    fr.onerror = () => rej(new Error("파일을 읽지 못했어요."));
-    fr.onload = () => {
-      if (f.type === "image/gif") { if (fr.result.length > 1.5e6) return rej(new Error("GIF가 너무 커요. 링크로 넣어 주세요.")); return res(fr.result); }
-      const im = new Image();
-      im.onerror = () => rej(new Error("이미지를 열지 못했어요."));
-      im.onload = () => {
-        const sc = Math.min(1, 1200 / im.naturalWidth), c = document.createElement("canvas");
-        c.width = Math.round(im.naturalWidth * sc); c.height = Math.round(im.naturalHeight * sc);
-        c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
-        let u = c.toDataURL("image/webp", .85);
-        if (!u.startsWith("data:image/webp")) u = c.toDataURL(f.type === "image/png" ? "image/png" : "image/jpeg", .85);
-        res(u);
-      };
-      im.src = fr.result;
+    if (f.type === "image/gif") { f.size > 3e6 ? rej(new Error("GIF가 너무 커요(3MB 이하만 가능). 링크로 넣어 주세요.")) : res(f); return; }
+    const url = URL.createObjectURL(f), im = new Image();
+    im.onerror = () => { URL.revokeObjectURL(url); rej(new Error("이미지를 열지 못했어요.")); };
+    im.onload = () => {
+      URL.revokeObjectURL(url);
+      const sc = Math.min(1, 1600 / Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement("canvas");
+      c.width = Math.round(im.naturalWidth * sc); c.height = Math.round(im.naturalHeight * sc);
+      c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+      c.toBlob(b => {
+        if (b && b.type === "image/webp") return res(b);
+        c.toBlob(b2 => b2 ? res(b2) : rej(new Error("사진을 변환하지 못했어요.")), f.type === "image/png" ? "image/png" : "image/jpeg", .88);
+      }, "image/webp", .88);
     };
-    fr.readAsDataURL(f);
+    im.src = url;
   });
+}
+async function uploadImage(blob) {
+  const ext = { "image/webp": "webp", "image/jpeg": "jpg", "image/png": "png", "image/gif": "gif" }[blob.type] || "jpg";
+  const path = "detail/" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8) + "." + ext;
+  const { error } = await sb.storage.from(CFG.BUCKET).upload(path, blob, { contentType: blob.type, cacheControl: "31536000" });
+  if (error) throw new Error("사진을 올리지 못했어요: " + error.message);
+  UPLOADED.push(path);
+  return sb.storage.from(CFG.BUCKET).getPublicUrl(path).data.publicUrl;
 }
 function makeRich(host, key, html) {
   const sizes = [12, 14, 16, 18, 20, 24, 28, 32, 40, 48];
@@ -348,8 +364,8 @@ function makeRich(host, key, html) {
   q('[data-a=addfile]').onclick = () => q('[data-i=file]').click();
   q('[data-i=file]').onchange = async e => {
     const f = e.target.files[0]; e.target.value = ""; if (!f) return;
-    emsg("사진 불러오는 중…");
-    try { addImg(await fileToDataUrl(f)); } catch (err) { emsg(err.message); }
+    emsg("사진 올리는 중…");
+    try { addImg(await uploadImage(await fileToBlob(f))); } catch (err) { emsg(err.message); }
   };
   q('[data-s=imgw]').onchange = e => {
     const v = e.target.value; e.target.value = ""; if (!v) return;
@@ -363,7 +379,7 @@ function makeRich(host, key, html) {
   };
 }
 function openEditor() {
-  $("fields").textContent = ""; emsg(""); RICH = {}; rteEl = null; rteRange = null;
+  $("fields").textContent = ""; emsg(""); RICH = {}; rteEl = null; rteRange = null; UPLOADED = [];
   $("editForm").classList.add("wide");
   FIELDS.forEach(([k, label, area]) => {
     if (area === "rich") {
@@ -381,12 +397,21 @@ $("editForm").onsubmit = async e => {
   e.preventDefault();
   const next = {};
   FIELDS.forEach(([k]) => { if (RICH[k]) { next[k] = RICH[k](); return; } const v = $("editForm").elements[k].value; next[k] = DEC[k] ? DEC[k](v) : v.trim(); });
-  if (JSON.stringify(next).length > 1500000) { emsg("내용이 너무 커요. 사진이 많거나 커서 그래요. 큰 사진은 링크로 넣어 주세요."); return; }
+  if (JSON.stringify(next).length > 1500000) { emsg("내용이 너무 커요. 글이 지나치게 길어요."); return; }
   $("editMsg").textContent = "저장 중…";
   const { error } = await sb.from(CFG.TABLE).upsert({ id: 1, data: next, updated_at: new Date().toISOString() });
   if (error) { $("editMsg").textContent = "저장하지 못했어요: " + error.message; return; }
+  const keep = storagePaths(JSON.stringify(next)), before = storagePaths(JSON.stringify(DATA));
+  const gone = [...new Set([...before, ...UPLOADED])].filter(p => !keep.has(p));
+  UPLOADED = UPLOADED.filter(p => keep.has(p));
   DATA = next; render(); $("editor").close();
+  removeFiles(gone);
 };
+$("editor").addEventListener("close", () => {
+  if (!UPLOADED.length) return;
+  const keep = storagePaths(JSON.stringify(DATA)), gone = UPLOADED.filter(p => !keep.has(p));
+  UPLOADED = []; removeFiles(gone);
+});
 
 /* ---- 상단 슬라이드 ---- */
 const still = matchMedia("(prefers-reduced-motion:reduce)");
