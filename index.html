@@ -32,7 +32,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .dots button.on{background:var(--goldtx)}
 .slider.one .nav,.slider.one .dots{display:none}
 .intro{text-align:left;padding:0 28px 8px calc(3% + clamp(4.4rem,15vw,9.5rem)*.22);margin-top:0;position:relative}
-.sig{position:absolute;left:3%;bottom:4%;margin:0;padding:.1em .22em;z-index:2;pointer-events:none;white-space:nowrap;
+.sig{position:absolute;left:3%;bottom:calc(4% - .7em);margin:0;padding:.1em .22em;z-index:2;pointer-events:none;white-space:nowrap;
 font-family:"Pencerio-Hairline","Gowun Batang",serif;font-weight:50;font-size:clamp(4.4rem,15vw,9.5rem);line-height:1.05;
 color:#fff;-webkit-text-stroke:1.2px #fff;text-shadow:0 0 2px rgba(25,80,125,.55),0 3px 16px rgba(35,100,150,.5)}
 .tagline{margin:0;max-width:34em;font-family:'Gowun Batang',var(--serif);font-size:1.08rem;line-height:2;word-break:keep-all}
@@ -50,7 +50,14 @@ html,body{height:100%}
 .intro .rich{white-space:normal;margin-top:12px;word-break:keep-all}
 .rich img{max-width:100%;height:auto;vertical-align:bottom}
 .rich[hidden],.plaque[hidden]{display:none}
-.plaque-row{display:flex;justify-content:center;margin:56px 0 8px;padding:0 28px}
+.plaque-row{display:flex;justify-content:center;margin:calc(56px + (clamp(4.4rem,15vw,9.5rem) - 4.4rem) * .5) 0 8px;padding:0 28px}
+/* 로딩 화면 */
+#loader{position:fixed;inset:0;z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:linear-gradient(#e6f5ff,#d6edff);transition:opacity .7s ease,visibility 0s linear .7s}
+#loader.done{opacity:0;visibility:hidden}
+.ld-bar{width:min(220px,56vw);height:3px;background:rgba(163,133,65,.25);overflow:hidden}
+.ld-bar i{display:block;height:100%;width:0;background:var(--gold);transition:width .5s cubic-bezier(.3,.7,.2,1)}
+.ld-txt{font-family:var(--serif);font-size:.8rem;letter-spacing:.45em;padding-left:.45em;color:var(--goldtx)}
+body:not(.ready) .page,body:not(.ready) .page *{animation-play-state:paused}
 .plaque-row:has(.plaque[hidden]){display:none}
 .plaque{padding:13px 28px;border:1px solid var(--gold);outline:1px solid var(--line);outline-offset:5px;text-align:center}
 .plaque b{display:block;font-family:var(--serif);font-weight:700;font-size:1.05rem;line-height:1.4;letter-spacing:.35em;padding-left:.35em;color:var(--marble)}
@@ -139,6 +146,8 @@ animation:sway var(--sw) ease-in-out var(--w) infinite alternate,blob var(--bl) 
 </style>
 </head>
 <body>
+<div id="loader" role="status" aria-live="polite"><div class="ld-bar"><i id="ldBar"></i></div><div class="ld-txt">LOADING</div></div>
+<noscript><style>#loader{display:none}</style></noscript>
 <div id="bubbles"></div>
 
 <div id="pager">
@@ -483,14 +492,39 @@ $("editBtn").onclick = openEditor;
 $("outBtn").onclick = () => sb.auth.signOut();
 document.querySelectorAll("[data-close]").forEach(b => b.onclick = () => b.closest("dialog").close());
 
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+let prog = 0;
+const bump = p => { prog = Math.max(prog, p); const b = $("ldBar"); if (b) b.style.width = prog + "%"; };
+let finished = false;
+async function finishLoading(t0) {
+  if (finished) return; finished = true;
+  await sleep(Math.max(0, 800 - (performance.now() - t0)));   // 너무 번쩍 지나가지 않게 최소 시간
+  bump(100); await sleep(350);
+  document.body.classList.add("ready");
+  const l = $("loader"); if (l) { l.classList.add("done"); setTimeout(() => l.remove(), 900); }
+}
+const firstImage = urls => {
+  const u = (urls || []).find(ok); if (!u) return Promise.resolve();
+  return Promise.race([new Promise(r => { const i = new Image(); i.onload = i.onerror = r; i.src = u; }), sleep(6000)]);
+};
 async function init() {
-  render();
-  if (!CFG.SUPABASE_URL || !CFG.SUPABASE_ANON_KEY || !window.supabase) return;
-  sb = supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY);
-  sb.auth.onAuthStateChange((_ev, s) => setAdmin(s));
-  const { data: s } = await sb.auth.getSession(); setAdmin(s.session);
-  const { data } = await sb.from(CFG.TABLE).select("data").eq("id", 1).maybeSingle();
-  if (data && data.data) { DATA = { ...DEFAULT, ...data.data }; render(); }
+  const t0 = performance.now(); bump(8);
+  setTimeout(() => finishLoading(t0), 12000);                   // 어떤 경우에도 로딩 화면이 영원히 남지 않게
+  try {
+    const fonts = Promise.race([(document.fonts && document.fonts.ready) || 0, sleep(2500)]).then(() => bump(40));
+    if (CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY && window.supabase) {
+      sb = supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY);
+      sb.auth.onAuthStateChange((_ev, s) => setAdmin(s));
+      try {
+        const { data: s } = await sb.auth.getSession(); setAdmin(s.session);
+        const { data } = await Promise.race([sb.from(CFG.TABLE).select("data").eq("id", 1).maybeSingle(), sleep(8000).then(() => ({ data: null }))]);
+        if (data && data.data) DATA = { ...DEFAULT, ...data.data };
+      } catch (e) { /* 불러오지 못하면 기본 화면으로 */ }
+    }
+    bump(70); render();
+    await firstImage(DATA.slides && DATA.slides.length ? DATA.slides : [DATA.mainImage]); bump(95);
+    await fonts;
+  } finally { finishLoading(t0); }
 }
 init();
 
