@@ -228,7 +228,7 @@ dialog::backdrop{background:rgba(30,70,100,.55)}
 .rtbar .sep{width:1px;height:24px;background:var(--line)}
 .rtimg{flex-wrap:wrap;position:sticky;bottom:0;z-index:6;border-top:1px solid var(--line);box-shadow:0 -6px 12px rgba(30,70,100,.14)}
 .rtimg[hidden]{display:none}
-.rte{min-height:260px;padding:12px 14px;background:linear-gradient(#e6f5ff,#d6edff);border:1px solid var(--line);border-top:0;font-family:'Noto Serif KR','Gowun Batang',var(--serif);font-size:1.08rem;line-height:2;color:var(--marble);outline:none}
+.rte{min-height:260px;padding:12px 14px;background:linear-gradient(#e6f5ff,#d6edff);border:1px solid var(--line);border-top:0;font-family:'Noto Serif KR','Gowun Batang',var(--serif);font-size:calc(1.08rem*var(--ts));line-height:1.95;color:var(--marble);outline:none}
 .rte:focus{border-color:var(--gold)}
 .rte:empty::before{content:attr(data-ph);color:#8fb0c4}
 .rte img{max-width:100%;height:auto;cursor:pointer}
@@ -502,11 +502,15 @@ function unframe(fig, keep) {
 }
 const frameAll = (root, editing) => root.querySelectorAll("img[data-frame]").forEach(i => buildFrame(i, editing));
 
-/* 글에 직접 지정된 px 크기도 --ts 비율로 같이 줄여요 */
+/* 기본 글자 크기와 같은 "인라인 크기"는 떼어내요.
+   (편집창에서 잘라내기/붙여넣기 하면 브라우저가 font-size를 박아 넣어서 그 문단만 커 보이던 문제)
+   일부러 고른 다른 크기는 편집창과 사이트가 똑같이 보이도록 그대로 둬요. */
 function scaleText(root) {
+  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+  const bases = [1.08 * rem, 1.08 * rem * (parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--ts")) || 1)];
   root.querySelectorAll('[style*="font-size"]').forEach(el => {
-    const m = /^([\d.]+)px$/.exec(el.style.fontSize);
-    if (m) el.style.fontSize = `calc(${m[1]}px * var(--ts))`;
+    const px = parseFloat(getComputedStyle(el).fontSize);
+    if (bases.some(b => Math.abs(px - b) < .6)) { el.style.removeProperty("font-size"); if (!el.getAttribute("style")) el.removeAttribute("style"); }
   });
 }
 /* 프로필 표: 짧은 항목 두 개가 이어지면 한 줄에 나란히 */
@@ -672,7 +676,7 @@ function makeRich(host, key, html) {
   </div>
 `;
   const rte = host.querySelector(".rte"), q = sel => host.querySelector(sel);
-  rte.innerHTML = clean(toHtml(html)); frameAll(rte, true); gaps(rte);
+  rte.innerHTML = clean(toHtml(html)); frameAll(rte, true); gaps(rte); scaleText(rte);
   let selImg = null;
   const panel = q(".rtimg");
   q("[data-a=photo]").onclick = () => { panel.hidden = !panel.hidden; };
@@ -692,6 +696,7 @@ function makeRich(host, key, html) {
   q('[data-a=below]').onclick = () => goLine(1);
   q('[data-a=above]').onclick = () => goLine(-1);
   rte.addEventListener("input", e => { if (!e.isComposing) gaps(rte); });
+  ["paste", "drop", "cut"].forEach(ev => rte.addEventListener(ev, () => setTimeout(() => scaleText(rte), 0)));
   const exec = (c, v) => { rteEl = rte; restoreSel(); document.execCommand("styleWithCSS", false, true); return document.execCommand(c, false, v); };
   host.querySelectorAll("[data-c]").forEach(b => b.onclick = () => {
     const c = b.dataset.c;
