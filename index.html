@@ -106,6 +106,84 @@ html,body{height:100%}
 .pf-s::before,.pf-s::after{content:"◆";font-size:.45rem;vertical-align:.2em;opacity:.7;margin:0 1.1em}
 @media (max-width:560px){.pf-g{grid-template-columns:1fr}.pf-c.h{grid-column:1/-1;grid-template-columns:6.2em 1fr}}
 
+/* 전승 목록 */
+.lore{max-width:36rem;margin:38px 0 24px}
+.lore[hidden]{display:none}
+.lore .pf-h{margin-bottom:10px}
+.lore-cap{margin:0 0 20px;text-align:center;font-size:.74rem;letter-spacing:.08em;color:var(--foam);line-height:1.6}
+.lore-list{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.lore-it{position:relative;display:block;width:100%;padding:14px 40px 13px;text-align:center;background:#f5fbff;border:1px solid var(--gold);outline:1px solid var(--line);outline-offset:3px;border-radius:0;transition:background .25s,transform .25s}
+.lore-it:hover{background:#fff}
+.lore-it:active{transform:scale(.99)}
+.lore-it::after{content:"›";position:absolute;right:17px;top:50%;transform:translateY(-54%);font-size:1.5rem;line-height:1;color:var(--goldtx);transition:transform .25s}
+.lore-it:hover::after{transform:translate(3px,-54%)}
+.lore-no{display:block;font-family:var(--serif);font-size:.7rem;letter-spacing:.4em;text-indent:.4em;line-height:1.4;color:var(--goldtx)}
+.lore-t{display:block;margin-top:4px;font-family:'Noto Serif KR','Gowun Batang',var(--serif);font-weight:700;font-size:.98rem;line-height:1.5;color:var(--marble);word-break:keep-all}
+.lore-s{display:block;margin-top:2px;font-size:.72rem;line-height:1.5;color:var(--foam);word-break:keep-all}
+
+/* 에피소드 페이지 */
+.ep{position:fixed;inset:0;z-index:50;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;background:linear-gradient(#e6f5ff,#d6edff);opacity:0;transform:translateY(24px);transition:opacity .4s ease,transform .55s cubic-bezier(.16,.8,.24,1)}
+.ep::-webkit-scrollbar{display:none}
+.ep[hidden]{display:none}
+.ep.on{opacity:1;transform:none}
+.ep-in{max-width:720px;margin:0 auto;padding:max(14px,env(safe-area-inset-top)) 22px calc(48px + env(safe-area-inset-bottom))}
+.ep-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.ep-back{padding:7px 16px 7px 12px;border:1px solid var(--gold);background:#f3faffe6;border-radius:2px;font-size:.85rem;color:var(--goldtx)}
+.ep-cnt{font-family:var(--serif);font-size:.75rem;letter-spacing:.3em;color:var(--goldtx)}
+.ep-hd{text-align:center;margin-bottom:22px}
+.ep-hd .lore-no{font-size:.78rem}
+.ep-hd h2{margin:6px 0 0;font-family:'Noto Serif KR','Gowun Batang',var(--serif);font-size:1.4rem;font-weight:700;line-height:1.45;word-break:keep-all}
+.ep-hd p{margin:6px 0 0;font-size:.78rem;letter-spacing:.06em;color:var(--goldtx)}
+.ep-body{display:grid;margin-top:28px;font-family:'Noto Serif KR','Gowun Batang',var(--serif);font-size:calc(1.08rem*var(--ts));line-height:1.95;word-break:keep-all}
+.ep-body p{margin:0 0 1.1em}
+.ep-body p:last-child{margin-bottom:0}
+.ep-txt{grid-area:1/1;opacity:0;visibility:hidden;transition:opacity .3s ease,visibility 0s .3s}
+.ep-txt.on{opacity:1;visibility:visible;transition:opacity .5s ease .15s,visibility 0s}
+.ep-nav{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
+.ep-nb{padding:11px 10px;text-align:center;background:#f5fbff;border:1px solid var(--line);border-radius:0}
+.ep-nb:hover{background:#fff;border-color:var(--gold)}
+.ep-nl{display:block;font-size:.7rem;letter-spacing:.12em;color:var(--goldtx)}
+.ep-nt{display:block;margin-top:2px;font-size:.85rem;line-height:1.4;color:var(--marble);word-break:keep-all}
+
+/* 삽화 슬라이드 (프레임 있음/없음) — 1216×832 기준 */
+.es{position:relative;max-width:680px;margin:6px auto}
+.es-win{position:relative;aspect-ratio:var(--r,1.4615)}
+.es.plain .es-win{border:1px solid var(--gold);outline:1px solid var(--line);outline-offset:5px}
+/* 그리스 프레임: 흰 대리석 띠 + 금색 선 + 위아래 메안더(그리스 키) 문양 */
+.es.gf{--key:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='14' viewBox='0 0 18 14'%3E%3Cpath d='M0 13H3V1H15V10H7V5H11M15 13H18' fill='none' stroke='%23b39358' stroke-width='1.2' stroke-linecap='square' stroke-linejoin='miter'/%3E%3C/svg%3E");width:calc(100% + 28px);max-width:none;margin:8px -14px;padding:5px 6px;background:linear-gradient(#fff,#f3f9fd);border:1px solid var(--gold);outline:1px solid var(--line);outline-offset:3px;box-shadow:0 12px 26px -14px rgba(40,110,160,.4)}
+.es.gf::before,.es.gf::after{content:"";display:block;height:8px;background:var(--key) repeat-x center/auto 100%}
+.es.gf::before{margin-bottom:5px}
+.es.gf::after{margin-top:5px}
+.es.gf .es-win{border:1px solid var(--gold)}
+@media (min-width:760px){.es.gf{width:100%;margin:8px auto}}
+.es-view{position:absolute;inset:0;overflow:hidden;z-index:0;touch-action:pan-y;user-select:none;-webkit-user-select:none;background:#e3f0fa}
+.es-track{display:flex;height:100%;will-change:transform}
+.es-slide{flex:0 0 100%;height:100%}
+.es-slide img,.es-slide .ph{width:100%;height:100%;display:block;object-fit:cover;pointer-events:none;-webkit-user-drag:none}
+.ep-hint{margin:26px 0 0;text-align:center;font-size:.72rem;letter-spacing:.1em;color:var(--foam);line-height:1.6}
+.ep-hint::before,.ep-hint::after{content:"◆";font-size:.5rem;vertical-align:.15em;opacity:.55;margin:0 .9em}
+@media (prefers-reduced-motion:reduce){.ep{transition:none}}
+
+/* 편집창: 전승 입력 */
+.le{margin-bottom:14px;padding:12px 14px 14px;background:#fff;border:1px solid var(--line)}
+.le-h{display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--goldtx)}
+.le-tg{flex:1;min-width:0;text-align:left;padding:6px 0;background:none;border:0;border-radius:0;color:var(--goldtx);font-weight:700;font-size:.92rem;line-height:1.4;word-break:keep-all}
+.le-body{margin-top:6px}
+.le:not(.open) .le-body{display:none}
+.le-h span{display:flex;gap:5px}
+.le .sm{height:32px;min-width:34px;padding:0 10px;border:1px solid var(--line);background:#f3faff;border-radius:2px;font-size:.85rem}
+.le textarea{min-height:76px}
+.ls{margin:10px 0;padding:10px 12px 12px;background:#f6fbff;border:1px solid var(--line)}
+.ls-h{display:flex;align-items:center;justify-content:space-between;font-size:.85rem;color:var(--goldtx)}
+.ls-h span{display:flex;gap:5px}
+.ls-img{display:flex;gap:6px;margin-top:6px}
+.ls-img input{flex:1;min-width:0}
+.ls textarea{min-height:90px}
+.le-btns{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px}
+.sheet .chk{display:flex;align-items:center;gap:6px;color:var(--marble)}
+.sheet .chk input{width:auto;margin:0}
+.le-add{width:100%;margin-bottom:6px;padding:11px}
+
 /* 관리 */
 .bar{position:fixed;right:16px;bottom:max(16px,env(safe-area-inset-bottom));display:none;gap:8px;z-index:40}
 .bar.on{display:flex}
@@ -185,6 +263,7 @@ animation:sway var(--sw) ease-in-out var(--w) infinite alternate,blob var(--bl) 
 <div id="loader" role="status" aria-live="polite"><div class="ld-bar"><i id="ldBar"></i></div><div class="ld-txt">LOADING</div></div>
 <noscript><style>#loader{display:none}</style></noscript>
 <div id="bubbles"></div>
+<div id="ep" class="ep" hidden role="dialog" aria-modal="true" aria-label="전승"><div class="ep-in" id="epIn"></div></div>
 
 <div id="pager">
 <section class="page on">
@@ -200,6 +279,7 @@ animation:sway var(--sw) ease-in-out var(--w) infinite alternate,blob var(--bl) 
   <div class="intro">
     <div class="pf" id="profile" hidden><div class="pf-h"><i></i><span>PROFILE</span><i></i></div><dl class="pf-g" id="pfGrid"></dl></div>
     <div class="tagline rich" id="detail" hidden></div>
+    <section class="lore" id="lore" hidden><div class="pf-h"><i></i><span>LEGENDS</span><i></i></div><p class="lore-cap">전승 · 이야기를 눌러 삽화와 함께 읽어요</p><ul class="lore-list" id="loreList"></ul></section>
   </div>
   <button class="link" id="adminLink" type="button">관리자</button>
 </header>
@@ -235,6 +315,25 @@ const CFG = { SUPABASE_URL: "https://dfevudnktgugywdrhghx.supabase.co", SUPABASE
 const DEFAULT = {
   name: "테티스", nameEn: "Thetis", nameSub: "ΘΕΤΙΣ", inscription: "ΝΗΡΕΩΣ ΘΥΓΑΤΗΡ", detail: "",
   profile: [["#","이름 표기"],["그리스어","Θέτις"],["라틴 문자","Thetis"],["#","상징"],["관장","바다"],["상징물","돌고래"],["#","가족"],["부모","아버지: 네레우스 · 어머니: 도리스"],["형제자매","49명의 네레이데스와 남동생 한 명"],["배우자","펠레우스"],["자식","슬하 1남 (아킬레우스)"],["#","기본 정보"],["원전","그리스·로마 신화"],["성별","여성"],["신장","148cm"],["체중","56kg"],["쓰리사이즈","117K - 48 - 106"]],
+  lore: [
+    { title: "제우스를 구하다", sub: "『일리아스』 1권", frame: true, slides: [
+      { img: "", text: "헤라와 포세이돈, 아테나가 제우스를 결박하려 했을 때, 테티스가 백 개의 팔을 가진 브리아레오스를 올림포스로 불러 이를 막았다고 한다." },
+      { img: "", text: "훗날 아킬레우스는 어머니에게 이 일을 제우스에게 상기시켜 달라고 청한다." }
+    ] },
+    { title: "펠레우스와의 혼인", sub: "아폴로도로스 『비블리오테케』 · 핀다로스", frame: true, slides: [
+      { img: "", text: "제우스와 포세이돈이 한때 테티스에게 구애했으나, 그녀가 낳을 아들이 아버지보다 강해진다는 예언을 듣고 물러났다고 전해진다. 신들은 그녀를 인간 영웅 펠레우스에게 맡기기로 했다." },
+      { img: "", text: "펠레우스가 붙잡자 테티스는 불과 물, 맹수로 모습을 바꾸며 빠져나가려 했다. 그러나 그는 켄타우로스 케이론의 조언대로 끝까지 놓지 않았고, 테티스는 결국 본모습으로 돌아와 그의 아내가 되었다." }
+    ] },
+    { title: "황금 사과", sub: "『키프리아』(요약본으로 전해짐) · 히기누스 『파불라이』", frame: true, slides: [
+      { img: "", text: "펠레우스와 테티스의 혼인 잔치에는 신들이 모두 초대되었지만, 불화의 여신 에리스만은 초대받지 못했다고 한다." },
+      { img: "", text: "분노한 에리스는 \"가장 아름다운 이에게\"라는 글귀가 새겨진 황금 사과를 잔치 자리에 던졌다. 헤라와 아테나, 아프로디테는 저마다 그 사과가 자기 것이라 다투었다." },
+      { img: "", text: "제우스는 판결을 피해 트로이아의 왕자 파리스에게 심판을 맡겼고, 이 다툼은 훗날 트로이아 전쟁의 불씨가 되었다고 전해진다." }
+    ] },
+    { title: "아킬레우스", sub: "『일리아스』 · 스타티우스 『아킬레이스』", frame: true, slides: [
+      { img: "", text: "테티스는 펠레우스와의 사이에서 아들 아킬레우스를 낳았다. 후대의 전승에서는 아기를 스틱스 강물에 담가 불사의 몸으로 만들려 했고, 그녀가 붙잡고 있던 발뒤꿈치만 물에 닿지 않았다고 한다." },
+      { img: "", text: "『일리아스』에서 테티스는 아들의 짧은 운명을 슬퍼하며, 헤파이스토스를 찾아가 새 갑옷을 청해 아킬레우스에게 가져다준다." }
+    ] }
+  ],
   accent: "#c85f55", slides: []
 };
 
@@ -443,7 +542,7 @@ function render() {
   $("sig").textContent = d.nameEn || d.name;
   $("pName").textContent = d.nameSub || ""; $("pSub").textContent = d.inscription || "";
   $("plaque").hidden = !(d.nameSub || d.inscription);
-  PFHOME.insertBefore(PF, $("detail")); const dh = clean(toHtml(d.detail)); $("detail").innerHTML = dh; $("detail").hidden = !hasContent(dh); frameAll($("detail"), false); scaleText($("detail")); renderProfile();
+  PFHOME.insertBefore(PF, $("detail")); const dh = clean(toHtml(d.detail)); $("detail").innerHTML = dh; $("detail").hidden = !hasContent(dh); frameAll($("detail"), false); scaleText($("detail")); renderProfile(); renderLore();
   buildSlider((d.slides && d.slides.length ? d.slides : [d.mainImage]).filter(ok));
 }
 
@@ -638,14 +737,85 @@ function makeRich(host, key, html) {
     const h = clean(c.innerHTML); return hasContent(h) ? h : "";
   };
 }
+/* ---- 전승 편집기: 에피소드 > 슬라이드(사진+글) ---- */
+function makeLoreEditor(host, items) {
+  host.innerHTML = '<div class="le-list"></div><button type="button" class="btn le-add">＋ 에피소드 추가</button>';
+  const listEl = host.querySelector(".le-list"), q = (r, f) => r.querySelector(`[data-f=${f}]`);
+  const renum = box => box.querySelectorAll(".ls").forEach((x, i) => { x.querySelector(".ls-n").textContent = "슬라이드 " + (i + 1); });
+  const slideRow = (box, sl) => {
+    const x = mk("div", "ls");
+    x.innerHTML = `<div class="ls-h"><b class="ls-n"></b><span><button type="button" class="sm" data-m="up" title="앞으로">▲</button><button type="button" class="sm" data-m="dn" title="뒤로">▼</button><button type="button" class="sm" data-m="del">삭제</button></span></div>
+    <div class="ls-img"><input data-f="img" placeholder="삽화 주소 (https://…)" spellcheck="false" autocomplete="off"><button type="button" class="sm" data-m="up2">사진 올리기</button><input type="file" accept="image/*" hidden></div>
+    <label>이 장면의 글 (빈 줄로 단락 나눔)<textarea data-f="stext"></textarea></label>`;
+    q(x, "img").value = sl.img || ""; q(x, "stext").value = sl.text || "";
+    const fi = x.querySelector("input[type=file]");
+    x.querySelector('[data-m=up2]').onclick = () => fi.click();
+    fi.onchange = async () => { const f = fi.files[0]; fi.value = ""; if (!f) return; emsg("삽화 올리는 중…"); try { q(x, "img").value = await uploadImage(await fileToBlob(f)); emsg(""); } catch (err) { emsg(err.message); } };
+    x.querySelectorAll(".ls-h [data-m]").forEach(b => b.onclick = () => {
+      const m = b.dataset.m;
+      if (m === "up" && x.previousElementSibling) box.insertBefore(x, x.previousElementSibling);
+      else if (m === "dn" && x.nextElementSibling) box.insertBefore(x.nextElementSibling, x);
+      else if (m === "del") { if ((q(x, "img").value || q(x, "stext").value) && !confirm("이 슬라이드를 삭제할까요?")) return; x.remove(); }
+      renum(box);
+    });
+    return x;
+  };
+  const collect = () => [...listEl.querySelectorAll(".le")].map(r => ({
+    title: q(r, "title").value.trim(), sub: q(r, "sub").value.trim(), frame: q(r, "frame").checked, open: r.classList.contains("open"),
+    slides: [...r.querySelectorAll(".ls")].map(x => ({ img: q(x, "img").value.trim(), text: q(x, "stext").value.replace(/\s+$/, "") })).filter(sl => sl.img || sl.text)
+  }));
+  const row = (e, i) => {
+    const r = mk("div", "le");
+    r.innerHTML = `<div class="le-h"><button type="button" class="le-tg"></button><span><button type="button" class="sm" data-m="top" title="맨 위로">⤒</button><button type="button" class="sm" data-m="up" title="위로">▲</button><button type="button" class="sm" data-m="dn" title="아래로">▼</button><button type="button" class="sm" data-m="del">삭제</button></span></div>
+    <div class="le-body"><label>제목<input data-f="title" autocomplete="off"></label>
+    <label>출전 · 부제 (선택)<input data-f="sub" autocomplete="off"></label>
+    <div class="ls-box"></div>
+    <div class="le-btns"><button type="button" class="sm" data-m="addsl">＋ 슬라이드 추가</button><button type="button" class="sm" data-m="multi">사진 여러 장 올려서 슬라이드 만들기</button><input type="file" accept="image/*" multiple hidden></div>
+    <label class="chk"><input type="checkbox" data-f="frame"> 그리스 프레임 씌우기</label></div>`;
+    q(r, "title").value = e.title || ""; q(r, "sub").value = e.sub || ""; q(r, "frame").checked = e.frame !== false;
+    r.classList.toggle("open", !!e.open);
+    const tg = r.querySelector(".le-tg"), lab = () => { tg.textContent = (r.classList.contains("open") ? "▾ " : "▸ ") + `에피소드 ${i + 1} · ` + (q(r, "title").value.trim() || "제목 없음"); };
+    tg.onclick = () => { r.classList.toggle("open"); lab(); }; q(r, "title").addEventListener("input", lab); lab();
+    const box = r.querySelector(".ls-box"); epSlides(e).forEach(sl => box.append(slideRow(box, sl))); renum(box);
+    r.querySelector("[data-m=addsl]").onclick = () => { const x = slideRow(box, { img: "", text: "" }); box.append(x); renum(box); q(x, "stext").focus(); };
+    const fi = r.querySelector(".le-btns input[type=file]");
+    r.querySelector("[data-m=multi]").onclick = () => fi.click();
+    fi.onchange = async () => {
+      const files = [...fi.files]; fi.value = "";
+      for (let k = 0; k < files.length; k++) {
+        emsg(`삽화 올리는 중… (${k + 1}/${files.length})`);
+        try { const u = await uploadImage(await fileToBlob(files[k])); box.append(slideRow(box, { img: u, text: "" })); renum(box); }
+        catch (err) { emsg(err.message); return; }
+      }
+      emsg("");
+    };
+    r.querySelectorAll(".le-h [data-m]").forEach(b => b.onclick = () => {
+      const cur = collect(), m = b.dataset.m;
+      if (m === "del") { if (!confirm("이 에피소드를 삭제할까요?")) return; cur.splice(i, 1); }
+      else if (m === "top") { if (i === 0) return; cur.unshift(cur.splice(i, 1)[0]); }
+      else { const j = m === "up" ? i - 1 : i + 1; if (j < 0 || j >= cur.length) return; [cur[i], cur[j]] = [cur[j], cur[i]]; }
+      draw(cur);
+    });
+    return r;
+  };
+  const draw = arr => { listEl.textContent = ""; arr.forEach((e, i) => listEl.append(row(e, i))); };
+  host.querySelector(".le-add").onclick = () => {
+    const cur = collect(); cur.push({ title: "", sub: "", frame: true, open: true, slides: [{ img: "", text: "" }] }); draw(cur);
+    const last = listEl.lastElementChild; if (last) { last.scrollIntoView({ block: "nearest" }); q(last, "title").focus(); }
+  };
+  draw(items);
+  return () => collect().filter(e => e.title || e.slides.length).map(({ open, ...e }) => ({ ...e, title: e.title || "제목 없음" }));
+}
 function openEditor() {
-  $("fields").textContent = ""; emsg(""); RICH = {}; rteEl = null; rteRange = null; UPLOADED = [];
+  $("fields").textContent = ""; emsg(""); RICH = {}; rteEl = null; rteRange = null; UPLOADED = []; LOREGET = null;
   FIELDS.filter(f => f[2] === "tbl").forEach(([k, label]) => {
     const t = document.createElement("div"); t.className = "lab"; t.textContent = label;
     const ta = document.createElement("textarea"); ta.name = k; ta.style.minHeight = "170px"; ta.style.marginBottom = "18px";
     ta.placeholder = "이름 | 테티스\n원전 | 그리스·로마 신화\n신장 | 170cm"; ta.value = ENC[k](DATA);
     $("fields").append(t, ta);
   });
+  { const t = document.createElement("div"); t.className = "lab"; t.textContent = "전승 (에피소드) — 눌러서 열리는 이야기 페이지 · 삽화는 슬라이드로 넘겨요";
+    const h = document.createElement("div"); h.style.marginBottom = "18px"; $("fields").append(t, h); LOREGET = makeLoreEditor(h, DATA.lore || []); }
   FIELDS.filter(f => f[2] === "rich").forEach(([k, label]) => {
     const t = document.createElement("div"); t.className = "lab"; t.textContent = label;
     const h = document.createElement("div"); $("fields").append(t, h); makeRich(h, k, DATA[k]);
@@ -665,6 +835,7 @@ $("editForm").onsubmit = async e => {
   e.preventDefault();
   const next = {};
   FIELDS.forEach(([k]) => { if (RICH[k]) { next[k] = RICH[k](); return; } const v = $("editForm").elements[k].value; next[k] = DEC[k] ? DEC[k](v) : v.trim(); });
+  next.lore = LOREGET ? LOREGET() : (DATA.lore || []);
   if (JSON.stringify(next).length > 1500000) { emsg("내용이 너무 커요. 글이 지나치게 길어요."); return; }
   $("editMsg").textContent = "저장 중…";
   const { error } = await sb.from(CFG.TABLE).upsert({ id: 1, data: next, updated_at: new Date().toISOString() });
@@ -679,6 +850,98 @@ $("editor").addEventListener("close", () => {
   if (!UPLOADED.length) return;
   const keep = storagePaths(JSON.stringify(DATA)), gone = UPLOADED.filter(p => !keep.has(p));
   UPLOADED = []; removeFiles(gone);
+});
+
+/* ---- 전승: 목록 · 에피소드 페이지 · 삽화 슬라이드 ---- */
+let LORE = [], CUR = null, epPushed = false, LOREGET = null;
+const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+const ROMAN = n => { let r = ""; [[10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"]].forEach(([v, c]) => { while (n >= v) { r += c; n -= v; } }); return r; };
+/* 에피소드 → [{img, text}] (예전 형식: 사진 목록+본문은 단락 순서대로 사진에 짝지어 줘요) */
+function epSlides(e) {
+  if (Array.isArray(e.slides)) return e.slides.map(x => ({ img: (x && x.img) || "", text: (x && x.text) || "" }));
+  const imgs = e.images || [], paras = String(e.text || "").split(/\n\s*\n/).map(t => t.trim()).filter(Boolean);
+  const n = Math.max(imgs.length, 1), out = [];
+  for (let i = 0; i < n; i++) out.push({ img: imgs[i] || "", text: "" });
+  paras.forEach((t, i) => { const o = out[Math.min(i, n - 1)]; o.text += (o.text ? "\n\n" : "") + t; });
+  return out;
+}
+function renderLore() {
+  LORE = (DATA.lore || []).filter(e => e && e.title);
+  const list = $("loreList"); list.textContent = ""; $("lore").hidden = !LORE.length;
+  LORE.forEach((e, i) => {
+    const li = mk("li"), b = mk("button", "lore-it"); b.type = "button";
+    b.append(mk("span", "lore-no", ROMAN(i + 1)), mk("span", "lore-t", e.title));
+    if (e.sub) b.append(mk("span", "lore-s", e.sub));
+    b.onclick = () => openEp(i); li.append(b); list.append(li);
+  });
+}
+/* 삽화 슬라이드: 손가락/마우스로 밀면 따라오고, 놓으면 넘어가요 */
+function makeShow(urls, framed, alt, onChange) {
+  const list = urls.length ? urls : [""], n = list.length;
+  const wrap = mk("div", framed ? "es gf" : "es plain"), win = mk("div", "es-win"), view = mk("div", "es-view"), track = mk("div", "es-track");
+  view.append(track); win.append(view); wrap.append(win);
+  const place = r => wrap.style.setProperty("--r", (r > 0 ? Math.min(2.2, Math.max(.7, r)) : 1216 / 832).toFixed(4));   // 기본 1216×832, 첫 삽화 비율이 다르면 그에 맞춤
+  place(1216 / 832);
+  list.forEach((u, i) => { const sl = mk("div", "es-slide"); art(sl, u, alt + " 삽화 " + (i + 1), i === 0 ? im => place(im.naturalWidth / im.naturalHeight) : null); track.append(sl); });
+  let idx = 0, shown = 0, x0 = null, dx = 0, cap = false;
+  function paint(anim) {
+    track.style.transition = anim ? "transform .55s cubic-bezier(.6,0,.2,1)" : "none";
+    track.style.transform = `translateX(calc(${-idx * 100}% + ${dx}px))`;
+    if (idx !== shown) { shown = idx; if (onChange) onChange(idx); }
+  }
+  function go(i) { idx = Math.max(0, Math.min(n - 1, i)); dx = 0; paint(true); }
+  view.addEventListener("pointerdown", e => { if (n < 2) return; x0 = e.clientX; dx = 0; cap = false; });
+  view.addEventListener("pointermove", e => {
+    if (x0 === null) return;
+    dx = e.clientX - x0;
+    if (!cap && Math.abs(dx) > 6) { cap = true; try { view.setPointerCapture(e.pointerId); } catch (_) { /* 무시 */ } }
+    if (!cap) return;
+    let d = dx; if ((idx === 0 && d > 0) || (idx === n - 1 && d < 0)) d *= .35;   // 끝에서는 살짝만 따라와요
+    track.style.transition = "none"; track.style.transform = `translateX(calc(${-idx * 100}% + ${d}px))`;
+  });
+  const end = () => {
+    if (x0 === null) return;
+    const d = dx; x0 = null; dx = 0;
+    if (cap && Math.abs(d) > Math.min(60, view.clientWidth * .15)) idx = Math.max(0, Math.min(n - 1, idx + (d < 0 ? 1 : -1)));
+    cap = false; paint(true);
+  };
+  view.addEventListener("pointerup", end); view.addEventListener("pointercancel", end);
+  paint(false);
+  return { el: wrap, step: d => go(idx + d) };
+}
+function showEp(i) {
+  const e = LORE[i]; if (!e) return;
+  const root = $("epIn"); root.textContent = "";
+  const bar = mk("div", "ep-bar"), back = mk("button", "ep-back", "‹ 돌아가기"); back.type = "button"; back.onclick = closeEp;
+  bar.append(back, mk("span", "ep-cnt", ROMAN(i + 1) + " / " + ROMAN(LORE.length)));
+  const hd = mk("div", "ep-hd"); hd.append(mk("span", "lore-no", ROMAN(i + 1)), mk("h2", null, e.title)); if (e.sub) hd.append(mk("p", null, e.sub));
+  const slides = epSlides(e), body = mk("div", "ep-body"), pages = [];
+  slides.forEach(sl => {
+    const d = mk("div", "ep-txt");
+    String(sl.text || "").split(/\n\s*\n/).map(t => t.trim()).filter(Boolean).forEach(t => {
+      const p = mk("p"); t.split("\n").forEach((ln, k) => { if (k) p.append(document.createElement("br")); p.append(ln); }); d.append(p);
+    });
+    body.append(d); pages.push(d);
+  });
+  const turn = k => pages.forEach((d, j) => d.classList.toggle("on", j === k));
+  const show = makeShow(slides.map(sl => ok(sl.img) ? sl.img : ""), e.frame !== false, e.title, turn); CUR = show; turn(0);
+  const nv = mk("div", "ep-nav");
+  const nb = (j, lab) => { if (!LORE[j]) return mk("span"); const b = mk("button", "ep-nb"); b.type = "button"; b.append(mk("span", "ep-nl", lab), mk("span", "ep-nt", LORE[j].title)); b.onclick = () => { try { history.replaceState({ ep: j }, ""); } catch (_) { /* 무시 */ } showEp(j); }; return b; };
+  nv.append(nb(i - 1, "‹ 이전 전승"), nb(i + 1, "다음 전승 ›"));
+  root.append(bar, hd, show.el, body);
+  if (slides.length > 1) root.append(mk("p", "ep-hint", "사진을 옆으로 슬라이드하여 진행"));
+  root.append(nv);
+  const ep = $("ep");
+  if (ep.hidden) { ep.hidden = false; void ep.offsetWidth; ep.classList.add("on"); }
+  ep.scrollTop = 0;
+}
+function openEp(i) { epPushed = false; try { history.pushState({ ep: i }, ""); epPushed = true; } catch (_) { /* 무시 */ } showEp(i); }
+function hideEp() { const ep = $("ep"); ep.classList.remove("on"); CUR = null; epPushed = false; setTimeout(() => { if (!ep.classList.contains("on")) ep.hidden = true; }, 450); }
+function closeEp() { if (epPushed && history.state && history.state.ep != null) { history.back(); return; } hideEp(); }
+addEventListener("popstate", e => { const st = e.state; if (st && st.ep != null && LORE[st.ep]) showEp(st.ep); else hideEp(); });
+addEventListener("keydown", e => {
+  if (!$("ep").classList.contains("on") || document.querySelector("dialog[open]")) return;
+  if (e.key === "Escape") closeEp(); else if (e.key === "ArrowLeft" && CUR) CUR.step(-1); else if (e.key === "ArrowRight" && CUR) CUR.step(1);
 });
 
 /* ---- 상단 슬라이드 ---- */
